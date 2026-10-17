@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "tasks": [
+    {
+      "id": "T01",
+      "title": "Контракт и fixtures",
+      "file": "tasks/T01-protocol.md",
+      "depends_on": [],
+      "requirements": [
+        "R01",
+        "R04"
+      ],
+      "scenarios": [
+        "S02",
+        "S05",
+        "S11"
+      ],
+      "status": "done",
+      "owner": "/root/t01_protocol",
+      "evidence": "tasks/reports/T01.md",
+      "blocked_reason": null,
+      "kind": "contract"
+    },
+    {
+      "id": "T02",
+      "title": "Python-каркас, settings и подписка",
+      "file": "tasks/T02-foundation.md",
+      "depends_on": [],
+      "requirements": [
+        "R01",
+        "R12"
+      ],
+      "scenarios": [
+        "S01",
+        "S02"
+      ],
+      "status": "done",
+      "owner": "/root/t02_foundation",
+      "evidence": "tasks/reports/T02.md",
+      "blocked_reason": null,
+      "kind": "implementation"
+    },
+    {
+      "id": "T03",
+      "title": "Parser и bronze row",
+      "file": "tasks/T03-parser.md",
+      "depends_on": [
+        "T01",
+        "T02"
+      ],
+      "requirements": [
+        "R02",
+        "R03",
+        "R04"
+      ],
+      "scenarios": [
+        "S03",
+        "S04",
+        "S05"
+      ],
+      "status": "done",
+      "owner": "/root/t03_parser",
+      "evidence": "tasks/reports/T03.md",
+      "blocked_reason": null,
+      "kind": "implementation"
+    },
+    {
+      "id": "T04",
+      "title": "Авторизация",
+      "file": "tasks/T04-auth.md",
+      "depends_on": [
+        "T02"
+      ],
+      "requirements": [
+        "R08",
+        "R09",
+        "R12"
+      ],
+      "scenarios": [
+        "S09"
+      ],
+      "status": "done",
+      "owner": "/root/t04_auth",
+      "evidence": "tasks/reports/T04.md",
+      "blocked_reason": null,
+      "kind": "implementation"
+    },
+    {
+      "id": "T05",
+      "title": "ClickHouse batch writer",
+      "file": "tasks/T05-writer.md",
+      "depends_on": [
+        "T03"
+      ],
+      "requirements": [
+        "R05",
+        "R06",
+        "R13"
+      ],
+      "scenarios": [
+        "S06",
+        "S07",
+        "S08"
+      ],
+      "status": "done",
+      "owner": "/root/t05_writer",
+      "evidence": "tasks/reports/T05.md",
+      "blocked_reason": null,
+      "kind": "implementation"
+    },
+    {
+      "id": "T06",
+      "title": "WebSocket reader",
+      "file": "tasks/T06-reader.md",
+      "depends_on": [
+        "T01",
+        "T03",
+        "T04"
+      ],
+      "requirements": [
+        "R01",
+        "R04",
+        "R07",
+        "R08",
+        "R11"
+      ],
+      "scenarios": [
+        "S10",
+        "S11",
+        "S14"
+      ],
+      "status": "done",
+      "owner": "/root/t06_reader",
+      "evidence": "tasks/reports/T06.md",
+      "blocked_reason": null,
+      "kind": "implementation"
+    },
+    {
+      "id": "T07",
+      "title": "Lifecycle и наблюдаемость",
+      "file": "tasks/T07-lifecycle.md",
+      "depends_on": [
+        "T05",
+        "T06"
+      ],
+      "requirements": [
+        "R09",
+        "R10",
+        "R15"
+      ],
+      "scenarios": [
+        "S12",
+        "S13",
+        "S16"
+      ],
+      "status": "done",
+      "owner": "/root/t07_lifecycle",
+      "evidence": "tasks/reports/T07.md",
+      "blocked_reason": null,
+      "kind": "implementation"
+    },
+    {
+      "id": "T08",
+      "title": "Docker и ClickHouse integration",
+      "file": "tasks/T08-deployment.md",
+      "depends_on": [
+        "T07"
+      ],
+      "requirements": [
+        "R13",
+        "R14",
+        "R16"
+      ],
+      "scenarios": [
+        "S15"
+      ],
+      "status": "done",
+      "owner": "/root/t08_deployment",
+      "evidence": "tasks/reports/T08.md",
+      "blocked_reason": null,
+      "kind": "implementation"
+    },
+    {
+      "id": "T09",
+      "title": "Независимая приёмка",
+      "file": "tasks/T09-acceptance.md",
+      "depends_on": [
+        "T08"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14",
+        "R15",
+        "R16"
+      ],
+      "scenarios": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S06",
+        "S07",
+        "S08",
+        "S09",
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S14",
+        "S15",
+        "S16",
+        "S17"
+      ],
+      "status": "done",
+      "owner": "/root/t09_acceptance",
+      "evidence": "tasks/reports/T09.md",
+      "blocked_reason": null,
+      "kind": "review"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "source": "/Users/mac/Desktop/Work/quant_project/quotes_bks_to_ch/subscribe_msg.yaml",
+  "captured_on": "2026-10-17",
+  "source_sha256": "57abe7e2f90a5c6e99f224d70c4e80d82611a9bee7acf3441fbf53877bab18ab",
+  "source_data_type": 3,
+  "target_data_type": 2,
+  "instrument_count": 101,
+  "pairs_sha256": "b9e8f030630ed3cca638940620dfbd4fed74be9761d922f22eb38d19092fb130"
+}

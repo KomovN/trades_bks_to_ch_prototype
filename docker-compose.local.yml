@@ -1,0 +1,97 @@
+name: trades-bks-to-ch-integration
+
+x-clickhouse-environment: &clickhouse-environment
+  CLICKHOUSE_HOST: clickhouse
+  CLICKHOUSE_PORT: "8123"
+  CLICKHOUSE_USER: integration
+  CLICKHOUSE_PASSWORD: integration-only-password
+  CLICKHOUSE_DATABASE: trades_integration
+  CLICKHOUSE_SECURE: "false"
+  CLICKHOUSE_CONNECT_TIMEOUT_SEC: "5"
+  CLICKHOUSE_IO_TIMEOUT_SEC: "10"
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8.4.13
+    environment:
+      CLICKHOUSE_USER: integration
+      CLICKHOUSE_PASSWORD: integration-only-password
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    volumes:
+      - clickhouse_integration_data:/var/lib/clickhouse
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          clickhouse-client --user "$$CLICKHOUSE_USER"
+          --password "$$CLICKHOUSE_PASSWORD" --query "SELECT 1"
+      interval: 2s
+      timeout: 2s
+      retries: 60
+      start_period: 5s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "2"
+
+  ch-init:
+    build:
+      context: .
+      target: runtime
+    environment:
+      <<: *clickhouse-environment
+    command:
+      - python
+      - /app/scripts/init_clickhouse.py
+      - /app/migrations/001_create_trades_raw_json.sql
+    volumes:
+      - ./migrations:/app/migrations:ro
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    restart: "no"
+
+  integration:
+    build:
+      context: .
+      target: tests
+    environment:
+      <<: *clickhouse-environment
+      INTEGRATION_CLICKHOUSE_HOST: clickhouse
+    command:
+      - python
+      - -m
+      - pytest
+      - -q
+      - -m
+      - integration
+      - tests/integration/test_clickhouse_contract.py
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    restart: "no"
+
+  container-smoke:
+    build:
+      context: .
+      target: tests
+    environment:
+      <<: *clickhouse-environment
+      INTEGRATION_CLICKHOUSE_HOST: clickhouse
+      SUBSCRIBE_CONFIG: /app/config/subscribe_msg.yaml
+    command:
+      - python
+      - -m
+      - pytest
+      - -q
+      - -m
+      - integration
+      - tests/integration/test_container_smoke.py
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  clickhouse_integration_data:

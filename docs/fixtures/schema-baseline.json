@@ -1,0 +1,6 @@
+{
+  "source": "user request 2026-10-17",
+  "table": "trades_raw_json",
+  "normalization": "collapse whitespace and strip",
+  "sha256": "90b21c045c8b9d394c1df4d5719803b8685ef4a4e6a0a9cb0476f420cb538eb4"
+}

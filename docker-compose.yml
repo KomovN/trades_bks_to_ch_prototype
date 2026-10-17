@@ -1,0 +1,32 @@
+name: trades-bks-to-ch
+
+services:
+  trades-ingestor:
+    image: ${TRADES_IMAGE:-trades-bks-to-ch:0.1.0}
+    build:
+      context: .
+      target: runtime
+    env_file:
+      - ${TRADES_ENV_FILE:-.env}
+    environment:
+      SUBSCRIBE_CONFIG: /app/config/subscribe_msg.yaml
+    volumes:
+      - type: bind
+        source: ${SUBSCRIBE_FILE:-./subscribe_msg.yaml}
+        target: /app/config/subscribe_msg.yaml
+        read_only: true
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    stop_grace_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"

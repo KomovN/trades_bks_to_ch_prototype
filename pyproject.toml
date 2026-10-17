@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools==82.0.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trades-bks-to-ch"
+version = "0.1.0"
+description = "Ingest обезличенных сделок БКС в ClickHouse"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "clickhouse-connect==1.11.0",
+    "httpx==0.28.1",
+    "PyYAML==6.0.3",
+    "python-dotenv==1.2.4",
+    "websockets==17.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+markers = [
+    "integration: требует настоящий локальный ClickHouse",
+    "live: требует явный доступ к реальному API БКС",
+]

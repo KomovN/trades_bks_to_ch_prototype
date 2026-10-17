@@ -1,0 +1,92 @@
+{
+  "provenance": "synthetic; not a live capture",
+  "cases": [
+    {
+      "name": "raw_fidelity",
+      "raw": "{ \"responseType\": \"LastTrades\", \"ticker\": \"SBER\", \"classCode\": \"TQBR\", \"side\": \"BUY\", \"volume\": 317, \"price\": 316.5300, \"quantity\": 1, \"dateTime\": \"2026-03-13T15:09:45.123456Z\", \"unknown\": {\"text\": \"код 401 не auth\", \"escaped\": \"\\u042f\"} }",
+      "expected_kind": "trade",
+      "expected_event_time": "2026-03-13T15:09:45.123Z"
+    },
+    {
+      "name": "success_payload_synthetic",
+      "raw": "{\"responseType\":\"LastTradesSuccess\",\"ticker\":\"SBER\",\"classCode\":\"TQBR\",\"side\":\"BUY\",\"price\":316.53,\"quantity\":1,\"dateTime\":\"2026-03-13T15:09:45.123Z\"}",
+      "expected_kind": "trade"
+    },
+    {
+      "name": "ack_with_metadata",
+      "raw": "{\"responseType\":\"LastTradesSuccess\",\"ticker\":\"SBER\",\"classCode\":\"TQBR\",\"dateTime\":\"2026-03-13T15:09:45.123Z\",\"subscriberType\":0}",
+      "expected_kind": "control"
+    },
+    {
+      "name": "control_with_unknown_fields",
+      "raw": "{\"responseType\":\"LastTradesSuccess\",\"ticker\":\"SBER\",\"classCode\":\"TQBR\",\"dateTime\":\"2026-03-13T15:09:45.123Z\",\"volume\":317,\"futureField\":true}",
+      "expected_kind": "control"
+    },
+    {
+      "name": "empty_error_object_trade",
+      "raw": "{\"responseType\":\"LastTrades\",\"ticker\":\"SBER\",\"classCode\":\"TQBR\",\"side\":\"BUY\",\"price\":316.53,\"quantity\":1,\"dateTime\":\"2026-03-13T15:09:45.123Z\",\"error\":{}}",
+      "expected_kind": "trade"
+    },
+    {
+      "name": "source_error_overrides_trade",
+      "raw": "{\"responseType\":\"LastTrades\",\"ticker\":\"SBER\",\"classCode\":\"TQBR\",\"side\":\"BUY\",\"price\":316.53,\"quantity\":1,\"dateTime\":\"2026-03-13T15:09:45.123Z\",\"error\":{\"code\":2,\"message\":\"NotFound\"}}",
+      "expected_kind": "source_error"
+    },
+    {
+      "name": "non_object_source_error",
+      "raw": "{\"responseType\":\"LastTrades\",\"ticker\":\"SBER\",\"classCode\":\"TQBR\",\"side\":\"BUY\",\"price\":316.53,\"quantity\":1,\"dateTime\":\"2026-03-13T15:09:45.123Z\",\"error\":\"upstream failure\"}",
+      "expected_kind": "source_error"
+    },
+    {
+      "name": "no_data",
+      "raw": "{\"responseType\":\"LastTrades\",\"error\":{\"code\":1,\"message\":\"NoData\"}}",
+      "expected_kind": "source_error"
+    },
+    {
+      "name": "wrong_type",
+      "raw": "{\"responseType\":\"Quotes\",\"ticker\":\"SBER\",\"classCode\":\"TQBR\",\"side\":\"BUY\",\"price\":316.53,\"quantity\":1,\"dateTime\":\"2026-03-13T15:09:45.123Z\"}",
+      "expected_kind": "other"
+    },
+    {
+      "name": "broken_json",
+      "raw": "{broken json",
+      "expected_kind": "malformed"
+    },
+    {
+      "name": "array_root",
+      "raw": "[]",
+      "expected_kind": "malformed"
+    },
+    {
+      "name": "naive_time",
+      "raw": "{\"responseType\":\"LastTrades\",\"ticker\":\"SBER\",\"classCode\":\"TQBR\",\"side\":\"BUY\",\"price\":316.53,\"quantity\":1,\"dateTime\":\"2026-03-13T15:09:45.123\"}",
+      "expected_kind": "malformed_trade"
+    },
+    {
+      "name": "offset_time",
+      "raw": "{\"responseType\":\"LastTrades\",\"ticker\":\"SBER\",\"classCode\":\"TQBR\",\"side\":\"BUY\",\"price\":316.53,\"quantity\":1,\"dateTime\":\"2026-03-13T18:09:45.123+03:00\"}",
+      "expected_kind": "trade",
+      "expected_event_time": "2026-03-13T15:09:45.123Z"
+    },
+    {
+      "name": "null_ticker",
+      "raw": "{\"responseType\":\"LastTrades\",\"ticker\":null,\"classCode\":\"TQBR\",\"side\":\"BUY\",\"price\":316.53,\"quantity\":1,\"dateTime\":\"2026-03-13T15:09:45.123Z\"}",
+      "expected_kind": "malformed_trade"
+    },
+    {
+      "name": "numeric_class",
+      "raw": "{\"responseType\":\"LastTrades\",\"ticker\":\"SBER\",\"classCode\":42,\"side\":\"BUY\",\"price\":316.53,\"quantity\":1,\"dateTime\":\"2026-03-13T15:09:45.123Z\"}",
+      "expected_kind": "malformed_trade"
+    },
+    {
+      "name": "partial_payload",
+      "raw": "{\"responseType\":\"LastTrades\",\"ticker\":\"SBER\",\"classCode\":\"TQBR\",\"side\":\"BUY\",\"price\":316.53,\"dateTime\":\"2026-03-13T15:09:45.123Z\"}",
+      "expected_kind": "malformed_trade"
+    },
+    {
+      "name": "invalid_utf8",
+      "input_hex": "fffe",
+      "expected_kind": "malformed"
+    }
+  ]
+}
