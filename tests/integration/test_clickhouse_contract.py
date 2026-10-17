@@ -21,6 +21,8 @@ def test_s15_real_clickhouse_schema_and_exact_roundtrip() -> None:
     database = integration_database()
     client = clickhouse_client()
     try:
+        assert database == "bronze"
+        assert client.command("SELECT currentDatabase()") == "bronze"
         # Проверяем идемпотентность канонического DDL независимо от init-контейнера.
         client.command(ddl)
         client.command(ddl)
@@ -110,3 +112,29 @@ def test_check_cli_reports_safe_current_metadata() -> None:
     assert "max_received_at=" in result.stdout
     assert os.environ["CLICKHOUSE_PASSWORD"] not in result.stdout
     assert os.environ["CLICKHOUSE_PASSWORD"] not in result.stderr
+
+
+def test_init_database_mismatch_does_not_create_a_wrong_database() -> None:
+    wrong_database = f"wrong_init_target_{uuid.uuid4().hex}"
+    env = os.environ.copy()
+    env["CLICKHOUSE_DATABASE"] = wrong_database
+
+    result = subprocess.run(
+        [sys.executable, "/app/scripts/init_clickhouse.py",
+         "/app/migrations/001_create_trades_raw_json.sql"],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=20,
+        check=False,
+    )
+
+    assert result.returncode == 1
+    client = clickhouse_client()
+    try:
+        assert int(client.command(
+            "SELECT count() FROM system.databases WHERE name = {name:String}",
+            parameters={"name": wrong_database},
+        )) == 0
+    finally:
+        client.close()

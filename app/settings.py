@@ -31,7 +31,7 @@ _DEFAULTS: dict[str, str] = {
     "CLICKHOUSE_PORT": "8123",
     "CLICKHOUSE_USER": "default",
     "CLICKHOUSE_PASSWORD": "",
-    "CLICKHOUSE_DATABASE": "default",
+    "CLICKHOUSE_DATABASE": "bronze",
     "CLICKHOUSE_TABLE": "trades_raw_json",
     "CLICKHOUSE_SECURE": "false",
     "CLICKHOUSE_CONNECT_TIMEOUT_SEC": "5",

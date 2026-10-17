@@ -27,6 +27,7 @@ def test_defaults_are_loaded_and_secrets_are_hidden(
     assert settings.access_token == "access-sentinel"
     assert settings.refresh_token == "refresh-sentinel"
     assert settings.clickhouse_secure is False
+    assert settings.clickhouse_database == "bronze"
     assert settings.batch_size == 1000
     rendered = repr(settings)
     assert "access-sentinel" not in rendered

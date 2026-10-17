@@ -16,7 +16,7 @@
 | CLICKHOUSE_PORT | 8123 | 1…65535 |
 | CLICKHOUSE_USER | default | непустая string |
 | CLICKHOUSE_PASSWORD | пусто | секрет |
-| CLICKHOUSE_DATABASE | default | простой identifier `[A-Za-z_][A-Za-z0-9_]*` |
+| CLICKHOUSE_DATABASE | bronze | простой identifier `[A-Za-z_][A-Za-z0-9_]*`; для канонического DDL значение bronze |
 | CLICKHOUSE_TABLE | trades_raw_json | в MVP только это значение; DDL имя фиксировано |
 | CLICKHOUSE_SECURE | false | строгий bool; неизвестные значения отклоняются |
 | CLICKHOUSE_CONNECT_TIMEOUT_SEC | 5 | > 0 и <= 10; вместе с I/O timeout <= 15 |
@@ -35,6 +35,9 @@
 явный WS max frame size (baseline 1 MiB) и ограничиваются внутренние буферы клиента.
 Превышение лимита не маскируется под нормальный idle.
 
-Миграция выбирает database через настройки клиента/init команды, а не редактирует
-SQL под окружение. Сервис не создаёт database/table автоматически.
+Канонический DDL явно создаёт `bronze.trades_raw_json`. Init сверяет его database
+с `CLICKHOUSE_DATABASE` до сети и DDL, не переписывает SQL под окружение. Runtime
+использует database из env и неквалифицированное `CLICKHOUSE_TABLE=trades_raw_json`;
+для этой миграции в существующем серверном env также нужно выбрать `bronze`.
+Сервис не создаёт database/table автоматически.
 Список инструментов находится только в [subscribe_msg.yaml](../../subscribe_msg.yaml).

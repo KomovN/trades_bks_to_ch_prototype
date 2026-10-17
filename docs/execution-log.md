@@ -155,6 +155,21 @@ deselected в unit; real ClickHouse 24.8.4.13 schema/check — 2 passed, contain
 через `git archive HEAD`; серверные секреты, live/production CH, SSH и deploy здесь
 не использовались. Runtime-протокол, DDL и 101 пара подписки не менялись.
 
+## 2026-10-17: согласование database bronze после исправления пользователя
+
+Пользователь изменил target канонического DDL на `bronze.trades_raw_json`.
+Координатор сохранил изменение и согласовал runtime/init defaults, `.env.example`,
+safe env, isolated Compose и schema baseline. Init проверяет совпадение database
+из env с квалифицированным DDL до сети/CREATE; SQL не переписывается. Серверный
+`.env` не читался и не менялся; в нём необходимо выставить `CLICKHOUSE_DATABASE=bronze`.
+
+`make verify` — exit 0: 173 offline passed, 4 integration deselected в unit;
+ClickHouse 24.8.4.13 init в bronze, schema/check/negative-init — 3 passed,
+container smoke — 1 passed. Повторный Linux offline suite с `--network none` —
+173 passed. Evidence: `docs/reviews/bronze-database.md`. Canonical DDL body не
+менялся, production/live подключения не выполнялись. Архив передачи обновляется
+из нового Git-коммита, без серверных env-файлов.
+
 ## Формат записи будущей задачи
 
 Указать task ID, owner, дату, изменённое поведение, команды и фактические exit codes,

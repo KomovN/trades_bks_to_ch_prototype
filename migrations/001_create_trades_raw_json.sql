@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS trades_raw_json
+CREATE TABLE IF NOT EXISTS bronze.trades_raw_json
 (
     received_at DateTime64(3, 'UTC') DEFAULT now64(3) CODEC(Delta(8), ZSTD(1)),
     source LowCardinality(String) DEFAULT 'bks',

@@ -53,7 +53,7 @@ CLICKHOUSE_HOST=ch.example.internal
 CLICKHOUSE_PORT=8123
 CLICKHOUSE_USER=trades_writer
 CLICKHOUSE_PASSWORD='SERVER_CH_PASSWORD'
-CLICKHOUSE_DATABASE=market_data
+CLICKHOUSE_DATABASE=bronze
 CLICKHOUSE_TABLE=trades_raw_json
 CLICKHOUSE_SECURE=false
 ```
@@ -62,6 +62,12 @@ CLICKHOUSE_SECURE=false
 сервера и `CLICKHOUSE_SECURE=true`. В `CLICKHOUSE_HOST` нужен только IP/DNS, без
 `http://`, `https://`, порта или пути. Использовать фактический HTTP(S)-порт своего
 ClickHouse; native TCP-порт 9000 для этого драйвера не подходит.
+
+Таблица в каноническом DDL — `bronze.trades_raw_json`. В существующем серверном
+`.env` обязательно заменить прежнее `CLICKHOUSE_DATABASE=default`/другое значение на
+`bronze`; `CLICKHOUSE_TABLE` оставить `trades_raw_json` без префикса. Defaults кода
+не переопределяют явно заданный серверный env. Данные старой базы автоматически
+не переносятся и не удаляются.
 
 Для автоматического обновления токена заполнить `REFRESH_TOKEN` и оставить
 `ACCESS_TOKEN` пустым. Если указан `ACCESS_TOKEN`, он имеет приоритет и используется
@@ -93,18 +99,19 @@ registry/PyPI; сама команда build не запускает БКС ил
 SELECT version(), timezone();
 ```
 
-Если таблица уже существует, также выполнить в выбранной database:
+Если таблица уже существует, также выполнить:
 
 ```sql
-SHOW CREATE TABLE trades_raw_json;
+SHOW CREATE TABLE bronze.trades_raw_json;
 ```
 
 Сверить схему с [`migrations/001_create_trades_raw_json.sql`](../migrations/001_create_trades_raw_json.sql).
 `IF NOT EXISTS` не исправляет уже существующую несовместимую схему. Offline-проверка
 прошла на ClickHouse `24.8.4.13`; версия внешнего сервера пока не проверялась.
 
-Init создаёт выбранную database при отсутствии и применяет канонический DDL.
-Он требует DDL-права; ingestion сам миграции не запускает.
+Init создаёт `bronze` при отсутствии и применяет канонический DDL. Он требует
+DDL-права; ingestion сам миграции не запускает. Несовпадение `CLICKHOUSE_DATABASE`
+с database в SQL даёт ошибку до подключения и создания каких-либо объектов.
 
 Если пользователь из `.env` имеет нужные DDL-права:
 

@@ -12,6 +12,11 @@ import clickhouse_connect
 
 
 _IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
+_CREATE_TARGET = re.compile(
+    r"\ACREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+"
+    r"(?P<database>[A-Za-z_][A-Za-z0-9_]*)\.trades_raw_json\s*\(",
+    re.IGNORECASE,
+)
 
 
 def _required(name: str, default: str | None = None) -> str:
@@ -64,13 +69,19 @@ def _client(database: str):
 
 
 def initialize(ddl_path: Path) -> tuple[str, str]:
-    database = _required("CLICKHOUSE_DATABASE", "default")
+    database = _required("CLICKHOUSE_DATABASE", "bronze")
     if not _IDENTIFIER.fullmatch(database):
         raise ValueError("CLICKHOUSE_DATABASE must be a simple identifier")
     ddl = ddl_path.read_text(encoding="utf-8")
     if not ddl.strip():
         raise ValueError("DDL file is empty")
+    target_name = _CREATE_TARGET.match(ddl.lstrip())
+    if target_name is None:
+        raise ValueError("DDL must create a database-qualified trades_raw_json table")
+    if target_name.group("database") != database:
+        raise ValueError("CLICKHOUSE_DATABASE must match the database in the DDL")
 
+    # Validate the migration target before opening a client or creating anything.
     bootstrap = _client("default")
     try:
         bootstrap.command(f"CREATE DATABASE IF NOT EXISTS `{database}`")
@@ -95,7 +106,7 @@ def initialize(ddl_path: Path) -> tuple[str, str]:
 
 
 def inspect() -> tuple[str, str, str, int, object]:
-    database = _required("CLICKHOUSE_DATABASE", "default")
+    database = _required("CLICKHOUSE_DATABASE", "bronze")
     if not _IDENTIFIER.fullmatch(database):
         raise ValueError("CLICKHOUSE_DATABASE must be a simple identifier")
     client = _client(database)

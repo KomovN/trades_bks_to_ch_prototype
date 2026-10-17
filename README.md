@@ -2,7 +2,7 @@
 
 Сервис принимает обезличенные сделки БКС по WebSocket и записывает исходный JSON
 в ClickHouse: WebSocket → ограниченная очередь в памяти → batch INSERT →
-`trades_raw_json`.
+`bronze.trades_raw_json`.
 
 Сервис использует Python 3.12/asyncio и полный список из 101 инструмента в
 `subscribe_msg.yaml`. Очередь существует только в памяти: аварийный выход может
@@ -53,10 +53,14 @@ TRADES_ENV_FILE=.env docker compose config --quiet
 
 Для refresh-режима заполнить `REFRESH_TOKEN`, оставив `ACCESS_TOKEN` пустым.
 `CLICKHOUSE_HOST` — IP/DNS без схемы и порта; порт и TLS задаются отдельно.
+`CLICKHOUSE_DATABASE=bronze`, `CLICKHOUSE_TABLE=trades_raw_json`: квалификатор базы
+не добавляется в `CLICKHOUSE_TABLE`. При обновлении исправить существующий серверный
+`.env` вручную, не перезаписывая credentials шаблоном.
 `docker-compose.yml` содержит только `trades-ingestor`.
 
 Перед запуском узнайте production-версию ClickHouse и выдайте отдельному DDL-user
-право создать выбранную database/table. Init выполняется отдельно от runtime:
+право создать `bronze.trades_raw_json`. Init выполняется отдельно от runtime и
+отклоняет несовпадение database из env с DDL до подключения:
 
 ```bash
 TRADES_ENV_FILE=.env docker compose build --pull trades-ingestor
@@ -95,3 +99,5 @@ T01–T09 и offline-приёмка завершены, отчёты — в [`ta
 Live БКС/production CH здесь не запускались: S17 остаётся `not run` до проверки
 на сервере. Повторная проверка и подготовка передачи описаны в
 [`docs/reviews/remote-deployment.md`](docs/reviews/remote-deployment.md).
+Уточнение database до `bronze` и его проверки:
+[`docs/reviews/bronze-database.md`](docs/reviews/bronze-database.md).

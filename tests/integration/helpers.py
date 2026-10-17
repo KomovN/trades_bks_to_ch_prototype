@@ -20,7 +20,7 @@ def clickhouse_client(*, database: str | None = None):
         port=int(os.environ.get("CLICKHOUSE_PORT", "8123")),
         username=os.environ.get("CLICKHOUSE_USER", "integration"),
         password=os.environ.get("CLICKHOUSE_PASSWORD", ""),
-        database=database or os.environ.get("CLICKHOUSE_DATABASE", "trades_integration"),
+        database=database or os.environ.get("CLICKHOUSE_DATABASE", "bronze"),
         secure=False,
         connect_timeout=5,
         send_receive_timeout=10,
@@ -30,4 +30,4 @@ def clickhouse_client(*, database: str | None = None):
 
 
 def integration_database() -> str:
-    return os.environ.get("CLICKHOUSE_DATABASE", "trades_integration")
+    return os.environ.get("CLICKHOUSE_DATABASE", "bronze")

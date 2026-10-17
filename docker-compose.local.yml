@@ -5,7 +5,7 @@ x-clickhouse-environment: &clickhouse-environment
   CLICKHOUSE_PORT: "8123"
   CLICKHOUSE_USER: integration
   CLICKHOUSE_PASSWORD: integration-only-password
-  CLICKHOUSE_DATABASE: trades_integration
+  CLICKHOUSE_DATABASE: bronze
   CLICKHOUSE_SECURE: "false"
   CLICKHOUSE_CONNECT_TIMEOUT_SEC: "5"
   CLICKHOUSE_IO_TIMEOUT_SEC: "10"
